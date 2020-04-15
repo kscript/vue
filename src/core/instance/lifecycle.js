@@ -137,7 +137,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// >4 挂载组件
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -164,6 +164,7 @@ export function mountComponent (
       }
     }
   }
+  // 挂载前的钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -186,11 +187,13 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 定义一个用于更新组件的函数
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
   }
 
+  // 实例化了一个Watcher
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
@@ -203,6 +206,9 @@ export function mountComponent (
   }, true /* isRenderWatcher */)
   hydrating = false
 
+  // 如果vm上已有$vnode, 说明已经挂载了
+  // 没有的话, 将实例设置为已挂载, 并调用mounted钩子
+  
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
