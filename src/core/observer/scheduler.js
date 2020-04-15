@@ -87,11 +87,14 @@ function flushSchedulerQueue () {
   // as we run existing watchers
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
+    // 调用watcher的before, 前面mountComponent函数实例化Watcher时, 第四个参数传入的 (src\core\instance\lifecycle.js)
+    // 如果已挂载,且未销毁, 则触发beforeUpdate钩子
     if (watcher.before) {
       watcher.before()
     }
     id = watcher.id
     has[id] = null
+    // 前面分析Watcher时, 了解过run的用途, 立即更新watcher的value
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
@@ -156,6 +159,7 @@ function callActivatedHooks (queue) {
   }
 }
 
+// >6 watcher队列
 /**
  * Push a watcher into the watcher queue.
  * Jobs with duplicate IDs will be skipped unless it's
@@ -163,11 +167,17 @@ function callActivatedHooks (queue) {
  */
 export function queueWatcher (watcher: Watcher) {
   const id = watcher.id
+  // 如果has集合里没有当前watcher的id
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {
+      // 如果不是在刷新中, 则加入队列里
       queue.push(watcher)
     } else {
+      // 刷新时, queue是个有序队列 参见: flushSchedulerQueue
+
+      // 这里是为了找到要插入到有序队列的位置
+      // 如果第i个的id小于watcher的id, 则splice进队列里
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
       let i = queue.length - 1
@@ -176,6 +186,7 @@ export function queueWatcher (watcher: Watcher) {
       }
       queue.splice(i + 1, 0, watcher)
     }
+    // 如果不是在等待状态 那么把刷新队列的任务放入nextTick
     // queue the flush
     if (!waiting) {
       waiting = true
