@@ -193,6 +193,13 @@ export function mountComponent (
     }
   }
 
+  // >8 分析完Watcher, 回来再看这里的参数, updateComponent
+  // 实例化这个Watcher, 其实是为了让watcher实例在其它依赖项变化时, 接收到更新通知, 以便更新自己
+  // 当然, 目前为止, watcher的deps里应该还没有别的东西
+  // 后面addDep进去的一些dep, 它们通知watcher更新的时候 watcher.run -> watcher.get -> updateComponent(即watcher.getter)
+  // 接下来分析上面定义 updateComponent 函数时的: vm._update(vm._render(), hydrating)
+  // >8 end
+  
   // 实例化了一个Watcher
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
@@ -208,7 +215,7 @@ export function mountComponent (
 
   // 如果vm上已有$vnode, 说明已经挂载了
   // 没有的话, 将实例设置为已挂载, 并调用mounted钩子
-  
+
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
