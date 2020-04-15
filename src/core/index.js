@@ -3,6 +3,11 @@ import { initGlobalAPI } from './global-api/index'
 import { isServerRendering } from 'core/util/env'
 import { FunctionalRenderContext } from 'core/vdom/create-functional-component'
 
+// 1
+// 入口文件引入了Vue的构造函数
+// 并在其上面挂载了一些的方法和属性
+// 这里还有一些是在原型上的
+
 initGlobalAPI(Vue)
 
 Object.defineProperty(Vue.prototype, '$isServer', {

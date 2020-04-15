@@ -28,6 +28,8 @@ export function initMixin (Vue: Class<Component>) {
 
     // a flag to avoid this being observed
     vm._isVue = true
+    // 内部组件的$options基于构造器的options
+    // 不是内部组件的话, 递归了很多上层的options
     // merge options
     if (options && options._isComponent) {
       // optimize internal component instantiation
@@ -49,13 +51,21 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
+    // 初始化了一些生命周期状态和实例属性(父根子等)
     initLifecycle(vm)
+    // 初始化组件事件
     initEvents(vm)
+    // 初始化用于渲染相关的属性
     initRender(vm)
+    // 生命周期回调beforeCreate
     callHook(vm, 'beforeCreate')
+    // 初始化注入, 收集上层组件提供的数据
     initInjections(vm) // resolve injections before data/props
+    // props methods data watch computed
     initState(vm)
+    // 生成当前组件提供的信息
     initProvide(vm) // resolve provide after data/props
+    // 生命周期回调created
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -64,7 +74,7 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    // 挂载
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
