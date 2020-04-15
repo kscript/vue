@@ -33,11 +33,13 @@ extend(Vue.options.components, platformComponents)
 // install platform patch function
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
+// >3. 浏览器中的挂载方法
 // public mount method
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
-): Component {
+  ): Component {
+  // el如果是字符串则作为selector, 选择元素, 不存在则创建一个元素节点
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }
