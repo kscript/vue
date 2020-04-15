@@ -28,12 +28,13 @@ export default class Dep {
     remove(this.subs, sub)
   }
 
+  // 通知当前的Dep.target 添加自己dep到其dep集合
   depend () {
     if (Dep.target) {
       Dep.target.addDep(this)
     }
   }
-
+  // 通知所有订阅者更新
   notify () {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
@@ -48,6 +49,8 @@ export default class Dep {
     }
   }
 }
+// Dep.target 没什么好说的, 用于指定当前正在处理的watcher是哪一个
+// targetStack 应该是watcher.update的lazy和sync不为true时用的
 
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher

@@ -35,6 +35,10 @@ export function parsePath (path: string): any {
   if (bailRE.test(path)) {
     return
   }
+  // 以.为分隔符, 看得出来这里返回一个函数是为了将来传入一个对象来取指定路径的属性值: 
+  // watch: {
+  //  "$route.params"(){}
+  // }
   const segments = path.split('.')
   return function (obj) {
     for (let i = 0; i < segments.length; i++) {
