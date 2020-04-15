@@ -56,12 +56,23 @@ export function initLifecycle (vm: Component) {
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
+  // >9 
+  // 先不管vm._render内部做了什么, 等下看, 暂时只需要知道其最终产物是个VNode
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
     const prevVnode = vm._vnode
+    // 没什么好说的
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
+    
+    // 追踪到 __patch__ 是createPatchFunction函数返回的一个函数
+    // 从最终返回值赋给vm.$el我们可以知道, 这个__patch__最后会返回一个dom
+    
+    // 根据注释和传入参数可以推断: 
+    // !prevVnode为true时, 应该会根据$el构建vnode, 然后执行相当于 !prevVnode为false时 的流程
+    // !prevVnode为false时, 说明有经过__patch__处理, 传入新老vnode, 更新dom
+
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
@@ -85,6 +96,9 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
     // updated hook is called by the scheduler to ensure that children are
     // updated in a parent's updated hook.
+
+    // 通过 updateComponent 函数更新
+
   }
 
   Vue.prototype.$forceUpdate = function () {
