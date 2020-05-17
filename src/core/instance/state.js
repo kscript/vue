@@ -44,18 +44,22 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   }
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
-
+// >11
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
+  // 先初始化props和methods
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
+  // 初始化data
   if (opts.data) {
     initData(vm)
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  // 初始化computed, 如果有
   if (opts.computed) initComputed(vm, opts.computed)
+  // 初始化watch, 如果有
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -68,6 +72,7 @@ function initProps (vm: Component, propsOptions: Object) {
   // instead of dynamic object key enumeration.
   const keys = vm.$options._propKeys = []
   const isRoot = !vm.$parent
+  // 如果不是根组件, 不会被添加观察
   // root instance props should be converted
   if (!isRoot) {
     toggleObserving(false)
@@ -129,6 +134,7 @@ function initData (vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    // methods 和 props上的属性, 不应该被data上的覆盖
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -183,6 +189,7 @@ function initComputed (vm: Component, computed: Object) {
     }
 
     if (!isSSR) {
+      // computed 本质上就是一个懒Watcher
       // create internal watcher for the computed property.
       watchers[key] = new Watcher(
         vm,
@@ -191,6 +198,8 @@ function initComputed (vm: Component, computed: Object) {
         computedWatcherOptions
       )
     }
+
+    // computed上的属性, 不应该和data,props,vm(methods)上的属性冲突
 
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined

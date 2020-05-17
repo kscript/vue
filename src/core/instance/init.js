@@ -62,6 +62,7 @@ export function initMixin (Vue: Class<Component>) {
     // 初始化注入, 收集上层组件提供的数据
     initInjections(vm) // resolve injections before data/props
     // props methods data watch computed
+    // >11
     initState(vm)
     // 生成当前组件提供的信息
     initProvide(vm) // resolve provide after data/props
